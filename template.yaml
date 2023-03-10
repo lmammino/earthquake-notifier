@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  earthquake-notifier
+
+Transform:
+  - AWS::Serverless-2016-10-31
+
+Resources:
+  monitorEarthquakes:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: rust-cargolambda
+      BuildProperties:
+        Binary: earthquake-notifier
+    Properties:
+      CodeUri: ./
+      Handler: bootstrap
+      Runtime: provided.al2
+      Architectures:
+        - arm64
+      MemorySize: 512
+      Timeout: 5
+      Description: Monitors for recent heartquakes matching certain conditions and send events to EventBridge
+      Environment:
+        DISTANCE_FROM_LAT_LON: "1000000"
+        MIN_MAGNITUDE: "1"
+        MAX_DISTANCE_METERS: "43.132,11.0345"
+      Events:
+        Scheduled:
+          Schedule: "rate(1 hour)"
+          Name: EveryHour
+          Description: run every hour
+          Enabled: true

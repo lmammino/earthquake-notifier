@@ -1,0 +1,18 @@
+[package]
+name = "earthquake-notifier"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+async-trait = "0.1.66"
+aws-sdk-eventbridge = "0.24.0"
+chrono = { version = "0.4.23", features = ["serde"] }
+geoutils = "0.5.1"
+lambda_runtime = "0.7"
+reqwest = "0.11.14"
+serde = "1.0.154"
+serde_json = "1.0.94"
+tokio = { version = "1", features = ["macros"] }
+tracing = { version = "0.1", features = ["log"] }
+tracing-subscriber = { version = "0.3", default-features = false, features = ["fmt"] }
+url = "2.3.1"
