@@ -22,6 +22,11 @@ lint = true
 capabilities = "CAPABILITY_IAM"
 confirm_changeset = true
 resolve_s3 = true
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-77ul7ns4tpc8"
+s3_prefix = "earthquake-notifier"
+region = "eu-west-1"
+parameter_overrides = "PrefixParam=\"earthquake-notifier\" EventBusNameParam=\"default\" CenterLatLonParam=\"37.5079,15.0830\" MinMagnitudeParam=\"3.5\" MaxDistanceMetersParam=\"2000000\" EmailAddressParam=\"lucianomammino@gmail.com\""
+image_repositories = []
 
 [default.package]
 [default.package.parameters]

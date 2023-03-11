@@ -19,7 +19,7 @@ impl Config {
     pub fn try_from_env() -> Result<Self, Box<dyn Error>> {
         let max_distance_meters = env::var("MAX_DISTANCE_METERS")?.parse()?;
         let min_magnitude = env::var("MIN_MAGNITUDE")?.parse()?;
-        let lat_long = env::var("DISTANCE_FROM_LAT_LON")?;
+        let lat_long = env::var("CENTER_LAT_LON")?;
         let (lat, lon) = lat_long.split_once(',').ok_or("missing comma")?;
         let lat: f64 = lat.parse()?;
         let lon: f64 = lon.parse()?;

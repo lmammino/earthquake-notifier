@@ -1,9 +1,33 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: >-
-  earthquake-notifier
+Description: "earthquake-notifier"
 
 Transform:
   - AWS::Serverless-2016-10-31
+
+Parameters:
+  PrefixParam:
+    Type: String
+    Description: A stack prefix used to name resources
+    Default: earthquake-notifier
+  EventBusNameParam:
+    Type: String
+    Description: The name of the eventbridge bus to use
+    Default: default
+  CenterLatLonParam:
+    Type: String
+    Description: Point to monitor for close earthquakes. LatLon format (e.g. "37.5079,15.0830")
+    Default: "37.5079,15.0830" # CATANIA
+  MinMagnitudeParam:
+    Type: String
+    Description: A flot representing the minimum magnitude to alert on
+    Default: "3.5" # 3.5ML
+  MaxDistanceMetersParam:
+    Type: String
+    Description: The max distance from the center in meters to monitor for
+    Default: "2000000" # 200 Km
+  EmailAddressParam:
+    Type: String
+    Description: The email address to subscribe to for notifications
 
 Resources:
   monitorEarthquakes:
@@ -13,6 +37,7 @@ Resources:
       BuildProperties:
         Binary: earthquake-notifier
     Properties:
+      Description: Monitors for recent heartquakes matching certain conditions and send events to EventBridge
       CodeUri: ./
       Handler: bootstrap
       Runtime: provided.al2
@@ -20,16 +45,54 @@ Resources:
         - arm64
       MemorySize: 512
       Timeout: 5
-      Description: Monitors for recent heartquakes matching certain conditions and send events to EventBridge
       Environment:
-        DISTANCE_FROM_LAT_LON: "1000000" # 100 Km
-        MIN_MAGNITUDE: "3.5"
-        MAX_DISTANCE_METERS: "37.5079,15.0830" # CATANIA
+        Variables:
+          CENTER_LAT_LON: !Ref CenterLatLonParam
+          MIN_MAGNITUDE: !Ref MinMagnitudeParam
+          MAX_DISTANCE_METERS: !Ref MaxDistanceMetersParam
+          EVENT_BUS: !Ref EventBusNameParam
       Policies:
-        - EventBridgePutEventsPolicy: {}
+        - EventBridgePutEventsPolicy:
+            EventBusName: !Ref EventBusNameParam
       Events:
         Scheduled:
-          Schedule: "rate(1 hour)"
-          Name: EveryHour
-          Description: run every hour
-          Enabled: true
+          Type: Schedule
+          Properties:
+            Schedule: "rate(1 hour)"
+            Name: EveryHour
+            Description: run every hour
+            Enabled: true
+
+  NotificationTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      Subscription:
+        - Endpoint: !Ref EmailAddressParam
+          Protocol: email
+      TopicName: !Sub "${PrefixParam}-topic"
+
+  TopicPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Principal:
+              Service: events.amazonaws.com
+            Action: sns:Publish
+            Effect: Allow
+            Resource: !Ref NotificationTopic
+      Topics:
+        - !Ref NotificationTopic
+
+  EventsRule:
+    Type: AWS::Events::Rule
+    Properties:
+      EventBusName: !Ref EventBusNameParam
+      EventPattern:
+        source:
+          - "earthquake-notifier"
+      Name: !Sub "${PrefixParam}-EventsRule"
+      State: ENABLED
+      Targets:
+        - Arn: !Ref NotificationTopic
+          Id: !Ref PrefixParam
