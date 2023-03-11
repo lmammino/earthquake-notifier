@@ -7,10 +7,11 @@ Under the hood, it uses [INGV APIs](http://webservices.ingv.it/swagger-ui/dist/?
 
 ## Requirements
 
-  - AWS SAM
-  - Rust
-  - Cargo Lambda
-  - An AWS account and the AWS CLI installed and configured
+  - [AWS SAM](https://aws.amazon.com/serverless/sam/)
+  - [Rust](https://www.rust-lang.org/)
+  - [Cargo Lambda](https://www.cargo-lambda.info/)
+  - [Docker](https://www.docker.com/) (required by SAM)
+  - An AWS account and the [AWS CLI](https://aws.amazon.com/cli/) installed and configured
 
 
 ## Configuration
@@ -79,6 +80,22 @@ This is a sample event that will be generated:
   }
 }
 ```
+
+## Local Development
+
+You can start a local development server with:
+
+```bash
+cargo lambda watch
+```
+
+Then, in another terminal run the following command to trigger an event (and invoke your local lambda):
+
+```bash
+cargo lambda invoke --data-file events/schedule.json earthquake-notifier
+```
+
+You should see logs in the first process and the result of the lambda execution in the second process.
 
 
 ## Contributing
