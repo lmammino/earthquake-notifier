@@ -19,12 +19,12 @@ This solution can be configured to monitor a specific point on Earth for nearby 
 
 This is the list of configuration parameters that you can provide to customise it to your needs:
 
-  - `PrefixParam`: A stack prefix used to name resources (default: `earthquake-notifier`)
-	- `EventBusNameParam`: The name of the EventBridge bus to use (default: `default`)
-	- `CenterLatLonParam`: Point to monitor for close earthquakes. LatLon format (default: `37.5079,15.0830`)
-	- `MinMagnitudeParam`: A float representing the minimum magnitude to alert on (default: `3.5`)
-	- `MaxDistanceMetersParam`: The max distance from the center in meters to monitor for (default: `2000000`)
-	- `EmailAddressParam`: The email address to subscribe to for notifications
+- `PrefixParam`: A stack prefix used to name resources (default: `earthquake-notifier`)
+- `EventBusNameParam`: The name of the EventBridge bus to use (default: `default`)
+- `CenterLatLonParam`: Point to monitor for close earthquakes. LatLon format (default: `37.5079,15.0830`)
+- `MinMagnitudeParam`: A float representing the minimum magnitude to alert on (default: `3.5`)
+- `MaxDistanceMetersParam`: The max distance from the center in meters to monitor for (default: `2000000`)
+- `EmailAddressParam`: The email address to subscribe to for notifications
 
 
 ## Build and deployment
