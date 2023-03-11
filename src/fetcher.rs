@@ -16,7 +16,7 @@ pub trait Fetcher {
 
     async fn fetch_last_hour(&self) -> Result<Vec<Earthquake>, Box<dyn Error>> {
         let now = Utc::now();
-        let one_hour_ago = now - chrono::Duration::hours(20);
+        let one_hour_ago = now - chrono::Duration::hours(1);
 
         self.fetch(one_hour_ago, now).await
     }

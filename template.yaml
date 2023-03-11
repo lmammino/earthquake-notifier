@@ -22,9 +22,11 @@ Resources:
       Timeout: 5
       Description: Monitors for recent heartquakes matching certain conditions and send events to EventBridge
       Environment:
-        DISTANCE_FROM_LAT_LON: "1000000"
-        MIN_MAGNITUDE: "1"
-        MAX_DISTANCE_METERS: "43.132,11.0345"
+        DISTANCE_FROM_LAT_LON: "1000000" # 100 Km
+        MIN_MAGNITUDE: "3.5"
+        MAX_DISTANCE_METERS: "37.5079,15.0830" # CATANIA
+      Policies:
+        - EventBridgePutEventsPolicy: {}
       Events:
         Scheduled:
           Schedule: "rate(1 hour)"

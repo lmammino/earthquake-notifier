@@ -1,5 +1,8 @@
+use aws_sdk_eventbridge::Client;
 use lambda_runtime::{service_fn, Error, LambdaEvent};
+use notifier::EventBridgeNotifier;
 use serde_json::Value;
+use std::env;
 
 use crate::{config::Config, fetcher::IngvFetcher};
 mod config;
@@ -17,11 +20,14 @@ async fn main() -> Result<(), Error> {
         .without_time()
         .init();
 
-    println!("Starting earthquake-monitor... ");
-
+    let event_bus = env::var("EVENT_BUS").ok();
+    let config = aws_config::load_from_env().await;
+    let client = Client::new(&config);
     let config = Config::try_from_env().map_err(|e| Error::from(e.to_string()))?;
     let fetcher = IngvFetcher::new();
-    let handler = service_fn(|_event: LambdaEvent<Value>| handler::handler(&config, &fetcher));
+    let notifier = EventBridgeNotifier::new(client, event_bus);
+    let handler =
+        service_fn(|_event: LambdaEvent<Value>| handler::handler(&config, &fetcher, &notifier));
     lambda_runtime::run(handler).await?;
     Ok(())
 }
