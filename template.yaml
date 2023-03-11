@@ -11,7 +11,7 @@ Parameters:
     Default: earthquake-notifier
   EventBusNameParam:
     Type: String
-    Description: The name of the eventbridge bus to use
+    Description: The name of the EventBridge bus to use
     Default: default
   CenterLatLonParam:
     Type: String
@@ -19,7 +19,7 @@ Parameters:
     Default: "37.5079,15.0830" # CATANIA
   MinMagnitudeParam:
     Type: String
-    Description: A flot representing the minimum magnitude to alert on
+    Description: A float representing the minimum magnitude to alert on
     Default: "3.5" # 3.5ML
   MaxDistanceMetersParam:
     Type: String

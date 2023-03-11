@@ -9,9 +9,12 @@ use geoutils::Location;
 use serde::Serialize;
 use std::str::FromStr;
 
+const BASE_URL: &str = "http://terremoti.ingv.it/en/event/";
+
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct Earthquake {
     pub event_id: String,
+    pub url: String,
     pub time: DateTime<Utc>,
     pub latitude: f64,
     pub longitude: f64,
@@ -33,6 +36,7 @@ impl FromStr for Earthquake {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut parts = s.split('|');
         let event_id = parts.next().ok_or("missing event_id")?.to_string();
+        let url = format!("{}{}", BASE_URL, &event_id);
         let mut time = parts.next().ok_or("missing time")?.to_string();
         time.push('Z');
         let time = DateTime::parse_from_rfc3339(time.as_str()).map_err(|e| e.to_string())?;
@@ -70,6 +74,7 @@ impl FromStr for Earthquake {
         let event_type = parts.next().ok_or("missing event_type")?.to_string();
         Ok(Earthquake {
             event_id,
+            url,
             time: time.into(),
             latitude,
             longitude,
@@ -105,6 +110,7 @@ mod tests {
             earthquake,
             Earthquake {
                 event_id: "34317601".to_string(),
+                url: "http://terremoti.ingv.it/en/event/34317601".to_string(),
                 time: "2023-03-10T16:13:34.380Z".parse::<DateTime<Utc>>().unwrap(),
                 latitude: 43.2798,
                 longitude: 12.3778,
