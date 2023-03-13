@@ -63,6 +63,56 @@ Resources:
             Description: run every hour
             Enabled: true
 
+  EventsLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 7
+      LogGroupName: !Sub "${PrefixParam}-events"
+
+  EventsLogGroupPolicy:
+    Type: AWS::Logs::ResourcePolicy
+    Properties:
+      PolicyName: !Sub "${PrefixParam}-events-log-policy"
+      PolicyDocument: !Sub >
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "EventBridgetoCWLogsCreateLogStreamPolicy",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "events.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "logs:CreateLogStream"
+              ],
+              "Resource": [
+                "${EventsLogGroup.Arn}"
+              ]
+            },
+            {
+              "Sid": "EventBridgetoCWLogsPutLogEventsPolicy",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "events.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "logs:PutLogEvents"
+              ],
+              "Resource": [
+                "${EventsLogGroup.Arn}"
+              ],
+              "Condition": {
+                "ArnEquals": {"AWS:SourceArn": "${EventsRule.Arn}"}
+              }
+            }
+          ]
+        }
+
   NotificationTopic:
     Type: AWS::SNS::Topic
     Properties:
@@ -95,4 +145,6 @@ Resources:
       State: ENABLED
       Targets:
         - Arn: !Ref NotificationTopic
-          Id: !Ref PrefixParam
+          Id: !Sub ${PrefixParam}-topic
+        - Arn: !Sub ${EventsLogGroup.Arn}
+          Id: !Sub ${PrefixParam}-logs

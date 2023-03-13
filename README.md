@@ -7,7 +7,7 @@ Under the hood, it uses [INGV APIs](http://webservices.ingv.it/swagger-ui/dist/?
 
 ## Requirements
 
-  - [AWS SAM](https://aws.amazon.com/serverless/sam/)
+  - [AWS SAM](https://aws.amazon.com/serverless/sam/) version 1.76.0 (or higher)
   - [Rust](https://www.rust-lang.org/)
   - [Cargo Lambda](https://www.cargo-lambda.info/)
   - [Docker](https://www.docker.com/) (required by SAM)
@@ -33,9 +33,11 @@ This is the list of configuration parameters that you can provide to customise i
 To build and deploy:
 
 ```bash
-sam build
+sam build --beta-features
 sam deploy --guided
 ```
+
+> **Note**: the flag `--beta-features` is currently required for the integration with cargo-lambda. More info [here](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/building-rust.html).
 
 If all goes well, now you should have a lambda running every hour on your account to check for recent earthquakes and notify you if one of them matches your conditions.
 
